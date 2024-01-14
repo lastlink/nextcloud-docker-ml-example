@@ -1,7 +1,7 @@
 # docker build .
 # docker images
 # docker build -t lastlink/nextcloud-ml .
-# FROM nextcloud:27.0-fpm as builder
+# FROM nextcloud:27.1-fpm as builder
 # # while alpine image would be smaller in size install commands are different and it's harder to get a custom node version installed
 
 # # install pdlib
@@ -61,7 +61,7 @@
 # end pdlib custom build https://hub.docker.com/r/jlohn/nextcloud-pdlib/dockerfile
 
 # new base image importing .so file
-FROM nextcloud:27.0-fpm
+FROM nextcloud:27.1-fpm
 
 # Install dlib and PDlib to image
 

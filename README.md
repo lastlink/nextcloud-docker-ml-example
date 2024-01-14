@@ -98,11 +98,11 @@
       ![portainer console](doc_media/portainer_console.png)
       * fix permisssions folder permissions as root user
       ```bash
-        chown -R www-data:www-data config
-        chown -R www-data:www-data apps
-        chown -R www-data:www-data custom_apps
-        chown -R www-data:www-data data -v
+        find config | xargs chown -R www-data:www-data -v
+        find apps | xargs chown -R www-data:www-data -v
+        find custom_apps | xargs chown -R www-data:www-data -v
         find data | xargs chown www-data:www-data -v
+        chown -R www-data:www-data data -v
 
       ```
    * run `./occ` get the user id needed, and log back in by user id
@@ -182,7 +182,8 @@ to install required dependencies and re-build your container like in [docker-com
 
 ### Upgrading
 * go only one major version at a time, backup db, custom_apps, and config.php
-  * 25 > 26
+  * 25 > 26 > 27 > 27.1
+    * check https://url/settings/admin/overview for next version to upgrade to
   * before uprade do a compose up commenting out cron job to disable
   * update Dockerfile with new major version run build
   * if errors 
