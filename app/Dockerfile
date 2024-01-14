@@ -1,27 +1,27 @@
 # docker build .
 # docker images
 # docker build -t lastlink/nextcloud-ml .
-FROM nextcloud:25.0-fpm as builder
-# while alpine image would be smaller in size install commands are different and it's harder to get a custom node version installed
+# FROM nextcloud:26.0-fpm as builder
+# # while alpine image would be smaller in size install commands are different and it's harder to get a custom node version installed
 
-# install pdlib
-# https://github.com/goodspb/pdlib
-RUN apt-get update && \
+# # install pdlib
+# # https://github.com/goodspb/pdlib
+# RUN apt-get update && \
 
-    apt-get install -y build-essential wget cmake libx11-dev libopenblas-dev unzip && \
-    rm -rf /var/lib/apt/lists/*
+#     apt-get install -y build-essential wget cmake libx11-dev libopenblas-dev unzip && \
+#     rm -rf /var/lib/apt/lists/*
 
-ARG DLIB_BRANCH=v19.22
-RUN wget -c -q https://github.com/davisking/dlib/archive/$DLIB_BRANCH.tar.gz \
+# ARG DLIB_BRANCH=v19.22
+# RUN wget -c -q https://github.com/davisking/dlib/archive/$DLIB_BRANCH.tar.gz \
 
-    && tar xf $DLIB_BRANCH.tar.gz \
-    && mv dlib-* dlib \
-    && cd dlib/dlib \
-    && mkdir build \
-    && cd build \
-    && cmake -DBUILD_SHARED_LIBS=ON -DDLIB_USE_CUDA=1 -DUSE_AVX_INSTRUCTIONS=1 --config Release .. \
-    && make \
-    && make install
+#     && tar xf $DLIB_BRANCH.tar.gz \
+#     && mv dlib-* dlib \
+#     && cd dlib/dlib \
+#     && mkdir build \
+#     && cd build \
+#     && cmake -DBUILD_SHARED_LIBS=ON -DDLIB_USE_CUDA=1 -DUSE_AVX_INSTRUCTIONS=1 --config Release .. \
+#     && make \
+#     && make install
 
 # Build and install PDLib on builder
 
@@ -61,11 +61,11 @@ RUN wget -c -q https://github.com/davisking/dlib/archive/$DLIB_BRANCH.tar.gz \
 # end pdlib custom build https://hub.docker.com/r/jlohn/nextcloud-pdlib/dockerfile
 
 # new base image importing .so file
-FROM nextcloud:25.0-fpm
+FROM nextcloud:26.0-fpm
 
 # Install dlib and PDlib to image
 
-COPY --from=builder /usr/local/lib/libdlib.so* /usr/local/lib/
+# COPY --from=builder /usr/local/lib/libdlib.so* /usr/local/lib/
 
 # If is necesary take the php extention folder uncommenting the next line
 # RUN php -i | grep extension_dir
@@ -96,8 +96,8 @@ COPY --from=builder /usr/local/lib/libdlib.so* /usr/local/lib/
 # increase max children
 
 # Install required packages
-RUN echo $'pm = dynamic\npm.max_children = 120\npm.start_servers = 12\npm.min_spare_servers = 6\npm.max_spare_servers = 18' > /usr/local/php/php/fpm/www.conf && \
-    set -ex; \
+# RUN echo $'pm = dynamic\npm.max_children = 120\npm.start_servers = 12\npm.min_spare_servers = 6\npm.max_spare_servers = 18' > /usr/local/php/php/fpm/www.conf && \
+RUN set -ex; \
     \
     apt-get update; \
     apt-get install -y --no-install-recommends \
@@ -138,9 +138,9 @@ RUN set -ex; \
     apt-mark auto '.*' > /dev/null; \
     apt-mark manual $savedAptMark; \
     ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
-        | awk '/=>/ { print $3 }' \
+        | awk '/=>/ { so = $(NF-1); if (index(so, "/usr/local/") == 1) { next }; gsub("^/(usr/)?", "", so); print so }' \
         | sort -u \
-        | xargs -r dpkg-query -S \
+        | xargs -r dpkg-query --search \
         | cut -d: -f1 \
         | sort -u \
         | xargs -rt apt-mark manual; \
@@ -161,7 +161,7 @@ ENV NEXTCLOUD_UPDATE=1
 CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 SHELL ["/bin/bash", "-login", "-c"]
 
-ENV NODE_VERSION=16.13.0
+ENV NODE_VERSION=20.11.0
 
 ENV NVM_DIR /usr/local/nvm 
 
@@ -188,6 +188,7 @@ RUN set -ex; \
         python3-cryptography \
         python3-pip \
     ; \
-    rm -rf /var/lib/apt/lists/* && \
-    python3 -m pip install -U pip  && \
-    python3 -m pip install pillow_heif
+    rm -rf /var/lib/apt/lists/* 
+    # && \
+    # python3 -m pip install -U pip  && \
+    # python3 -m pip install pillow_heif --break-system-package 
