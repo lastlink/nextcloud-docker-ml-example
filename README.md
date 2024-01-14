@@ -20,7 +20,7 @@
    * recommended to set less cores to drive cpu usage to less than 100%
    * also node path needs to be set `/usr/local/nvm/versions/node/v16.13.0/bin/node` it'll depend on if you changed the version used
    * ![](doc_media/recognize_settings.PNG)
-  * [Face Recognition](https://apps.nextcloud.com/apps/facerecognition)
+  * ~~[Face Recognition](https://apps.nextcloud.com/apps/facerecognition)~~ just use recognize
    * need to console log into nextcloud app and download a module using the command line
    * `./occ face:setup -M 1GB` adding more memory doesn't help, but can make it run slower or completely stop
 * additional plugins that I've setup for convenience
@@ -101,7 +101,9 @@
         chown -R www-data:www-data config
         chown -R www-data:www-data apps
         chown -R www-data:www-data custom_apps
-        chown -R www-data:www-data data
+        chown -R www-data:www-data data -v
+        find data | xargs chown www-data:www-data -v
+
       ```
    * run `./occ` get the user id needed, and log back in by user id
       ![portainer_container_user_login](doc_media/portainer_container_user_login.png)
@@ -177,3 +179,19 @@ to install required dependencies and re-build your container like in [docker-com
     * https://superuser.com/questions/497205/can-robocopy-monitor-files-on-a-time-increment-of-less-than-one-minute
       * powershell to handle
     * recommend for **WINDOWS** [DSYNCHRONIZE](http://dimio.altervista.org/eng/) - free and supports realtime sync
+
+### Upgrading
+* go only one major version at a time, backup db, custom_apps, and config.php
+  * 25 > 26
+  * before uprade do a compose up commenting out cron job to disable
+  * update Dockerfile with new major version run build
+  * if errors 
+    * run `docker compose down` may need to do a prune `docker system prune -a`
+    * delete nextcloud_data excluding config, custom_apps, and data folder
+    * then `docker compose up -d --build` and test updating `app/DockerFile` as needed
+    * after _data folder in volume properly populates then log into nextcloud_app and run `./occ upgrade`
+      * `./occ app:update --all`
+      * `./occ db:add-missing-indice`
+      * `./occ check`
+      * `./occ maintenance:mode --off`
+      * run chown permissions again on data folder and validate
