@@ -136,7 +136,8 @@
        * DON'T forget to change back to 5 minutes or 30 seconds the following day to not kill your battery
 
 ## Hardware
-* Note: raspberry pi is not powerful enough for nextcloud
+* Note: raspberry pi is not powerful enough for nextcloud with image recognition (maybe raspberry pi 5)
+* recommended a mini pc with intel cpu gives benefit of low wattage. intel has better gpu driver support for nextcloud
 * [beelink-5800H](https://amzn.to/3KYGctn) (5500U is also fine, just less powerful)
   * has windows 11 pro, can replace with linux such as ubuntu
 * bump ram to [64 gb](https://amzn.to/3L0mkpS) (not needed, but nice for handling more users)

@@ -101,17 +101,17 @@ services:
       - "9001:9000"
     command: -concurrency 50 -enable-url-source -log-level debug
 
-   clamav:
-    image: "clamav/clamav:stable_base"
-    container_name: nextcloud_clamav
-    networks: 
-      - nextcloud_network 
-    volumes:
-      # Socket
-      - /var/run/clamav/:/var/run/clamav/
-      # Virus DB
-      - /var/docker/clamav/virus_db/:/var/lib/clamav/
-    restart: unless-stopped
+#    clamav:
+#     image: "clamav/clamav:stable_base"
+#     container_name: nextcloud_clamav
+#     networks: 
+#       - nextcloud_network 
+#     volumes:
+#       # Socket
+#       - /var/run/clamav/:/var/run/clamav/
+#       # Virus DB
+#       - /var/docker/clamav/virus_db/:/var/lib/clamav/
+#     restart: unless-stopped
 
    app:
     container_name: nextcloud_app
@@ -199,6 +199,7 @@ services:
 volumes:
   pg_15:
   nextcloud:
+  nextcloud_cron:
   nextcloud_config:
   pgadmin-data:
   pgadmin-certs:

@@ -25,34 +25,34 @@ RUN wget -c -q https://github.com/davisking/dlib/archive/$DLIB_BRANCH.tar.gz \
 
 # Build and install PDLib on builder
 
-ARG PDLIB_BRANCH=master
+# ARG PDLIB_BRANCH=master
 # https://github.com/matiasdelellis/pdlib
-RUN wget -c -q https://github.com/matiasdelellis/pdlib/archive/$PDLIB_BRANCH.zip \
+# RUN wget -c -q https://github.com/matiasdelellis/pdlib/archive/$PDLIB_BRANCH.zip \
 
-    && unzip $PDLIB_BRANCH \
-    && mv pdlib-* pdlib \
-    && cd pdlib \
-    && phpize \
-    && ./configure \
-    && make \
-    && make install
+#     && unzip $PDLIB_BRANCH \
+#     && mv pdlib-* pdlib \
+#     && cd pdlib \
+#     && phpize \
+#     && ./configure \
+#     && make \
+#     && make install
 
 # Enable PDlib on builder
 
 # If necesary take the php settings folder uncommenting the next line
 # RUN php -i | grep "Scan this dir for additional .ini files"
-RUN echo "extension=pdlib.so" > /usr/local/etc/php/conf.d/pdlib.ini
+# RUN echo "extension=pdlib.so" > /usr/local/etc/php/conf.d/pdlib.ini
 
 # Test PDlib instalation on builer
 
-RUN apt-get update && \
+# RUN apt-get update && \
 
-    apt-get install -y git && \
-    rm -rf /var/lib/apt/lists/*
-RUN git clone https://github.com/matiasdelellis/pdlib-min-test-suite.git \
+#     apt-get install -y git && \
+#     rm -rf /var/lib/apt/lists/*
+# RUN git clone https://github.com/matiasdelellis/pdlib-min-test-suite.git \
 
-    && cd pdlib-min-test-suite \
-    && make
+#     && cd pdlib-min-test-suite \
+#     && make
 
 #
 # If pass the tests, we are able to create the final image.
@@ -69,11 +69,11 @@ COPY --from=builder /usr/local/lib/libdlib.so* /usr/local/lib/
 
 # If is necesary take the php extention folder uncommenting the next line
 # RUN php -i | grep extension_dir
-COPY --from=builder /usr/local/lib/php/extensions/no-debug-non-zts-20210902/pdlib.so /usr/local/lib/php/extensions/no-debug-non-zts-20210902/
+# COPY --from=builder /usr/local/lib/php/extensions/no-debug-non-zts-20210902/pdlib.so /usr/local/lib/php/extensions/no-debug-non-zts-20210902/
 
 # Enable PDlib on final image
 
-RUN echo "extension=pdlib.so" > /usr/local/etc/php/conf.d/pdlib.ini
+# RUN echo "extension=pdlib.so" > /usr/local/etc/php/conf.d/pdlib.ini
 
 # Pdlib is already installed, now without all build dependencies.
 # You could test again if everything is correct, uncommenting the next lines
@@ -103,7 +103,7 @@ RUN echo $'pm = dynamic\npm.max_children = 120\npm.start_servers = 12\npm.min_sp
     apt-get install -y --no-install-recommends \
         ffmpeg \
         ghostscript \
-        libopenblas-base \
+        # libopenblas-base \
         libmagickcore-6.q16-6-extra \
         procps \
         smbclient \
